@@ -1,1 +1,9 @@
-<p>region works!</p>
+<app-region-card
+  *ngIf="region$ | async as region"
+  [region]="region"
+></app-region-card>
+<app-countries-list
+  *ngIf="countries$ | async as countries"
+  [countries]="countries"
+  isAbsolute="-1"
+></app-countries-list>

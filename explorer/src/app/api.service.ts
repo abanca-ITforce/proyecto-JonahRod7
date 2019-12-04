@@ -1,18 +1,40 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
 import { map } from "rxjs/operators";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class ApiService {
-  private endPoint = "https://api.worldbank.org/v2/country";
+  private countryEndPoint = "https://api.worldbank.org/v2/country";
+  private regionEndPoint = "https://api.worldbank.org/v2/region";
   private format = "?per_page=1000&format=json";
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {}
 
   getAllCountries$() {
-    const url = this.endPoint + this.format;
+    const url = this.countryEndPoint + this.format;
+    return this.httpClient.get<any[]>(url).pipe(map(result => result[1]));
+  } // arreglar el map para que solo muestre paises y no otros objetos como regiones, incomeLevels, etc. Condicionando aque el objeto tenga capitalCity !== null
+
+  getCountryById$(countryId) {
+    const url = this.countryEndPoint + "/" + countryId + this.format;
+    return this.httpClient.get<any>(url).pipe(map(result => result[1][0]));
+  }
+
+  getAllRegions$() {
+    const url = this.regionEndPoint + this.format;
+    return this.httpClient.get<any[]>(url).pipe(map(result => result[1]));
+  }
+
+  getRegionByCode(regionCode: any) {
+    const url = this.regionEndPoint + "/" + regionCode + this.format;
+    return this.httpClient.get<any>(url).pipe(map(result => result[1][0]));
+  }
+
+  getCountriesByRegionCode(regionCode: any) {
+    const url = this.countryEndPoint + this.format + "&region=" + regionCode;
+    console.log({ url });
     return this.httpClient.get<any[]>(url).pipe(map(result => result[1]));
   }
 }
